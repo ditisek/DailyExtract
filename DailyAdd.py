@@ -110,7 +110,10 @@ class MainFrame(wx.Frame):
             df2 = xl.parse('Email Summary')
 
             status = df2.iloc[19, 0].split()[-1]
-            comment = df2.iloc[25, 0].replace(',', ' ')
+            try:
+                comment = df2.iloc[25, 0].replace(',', ' ')
+            except:
+                comment = ''
 
             for item in df1.columns:
                 if (item.upper().startswith('VTEM')) or \
