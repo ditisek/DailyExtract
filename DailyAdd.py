@@ -131,62 +131,31 @@ class MainFrame(wx.Frame):
 
             found = False
 
-            data = [[] for i in range(no_rows + 1)]
+            workbook = openpyxl.load_workbook(
+                filename=file, data_only=True, read_only=True)
 
-            # print('Rows:')
-            for row in df1.index:
-                # print(f'Row {row} contains:')
+            ws = workbook['Daily Report']
 
-                for item in df1.loc[row].dropna():
-                    # print(item)
-                    data[row].append(item)
-                # print(df1.loc[row].dropna())
+            client = ws['S4'].value.replace(',', '')
+            system_conf = ws['CF2'].value
+            datuminside = ws['BV3'].value.strftime('%Y/%m/%d')
+            job_no = ws['BV4'].value
+            location = ws['S5'].value.replace(',', '')
+            chief = ws['M7'].value
+            operator = ws['M8'].value
+            pm = ws['M9'].value
+            qc = ws['M10'].value
+            newlines = ws['A15'].value
+            reflights = ws['L15'].value
+            dailytotal = ws['W15'].value
+            qckm = ws['BP35'].value
+            qcperc = ws['AS15'].value
+            totalkm = ws['BD15'].value
+            acctotal = ws['BO15'].value
+            perccomp = ws['BZ15'].value
+            tofly = ws['CK15'].value
 
-            # conf_row = 'Revision 2.02 Confidential Information - for Geotech personnel only. '
-            # date_row = ' Send to: fieldreports@geotech.ca or fieldreports@geotechairbone.com'
-
-            # print(p.open_files())
-
-            for row in data:
-                # row = str(row)
-                # print(row)
-                if len(row) > 1:
-                    row[0] = str(row[0])
-                    if 'Revision' in row[0]:
-                    # if row[0] == conf_row:
-                        system_conf = row[-2]
-                    # elif row[0] == date_row:
-                    elif 'Send' in row[0]:
-                        datuminside = row[-2].strftime('%Y/%m/%d')
-                    # elif row[0] == 'Client':
-                    elif 'Client' in row[0]:
-                        client = row[1].replace(',', ' ')
-                        job_no = row[-1]
-                    elif 'Survey Location' in row[0]:
-                        location = row[1].replace(',', ' ')
-                    elif 'Crew Chief' in row[0]:
-                        chief = row[1]
-                    # elif 'Operator' in row[0]:
-                    #     if row[1] != 'Registration':
-                    #         operator = row[1]
-                    elif 'Project Manager' in row[0]:
-                        pm = row[1]
-                    elif 'DataQC Processor' in row[0]:
-                        qc = row[1]
-
-            if data[6][1] == 'Registration':
-                operator = 'No operator'
-            else:
-                operator = data[6][1]
-            newlines = data[13][0]
-            reflights = data[13][1]
-            dailytotal = data[13][2]
-            qckm = data[13][3]
-            qcperc = data[13][4]
-            totalkm = data[13][5]
-            acctotal = data[13][6]
-            perccomp = data[13][7]
-            tofly = data[13][8]
+            workbook.close()
 
             print(f'{datuminside},{sysno_f},{system_conf},{job_no},{location},'
                   f'{client},{pm},{qc},{chief},{operator},{status},'
