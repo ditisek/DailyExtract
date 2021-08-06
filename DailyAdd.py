@@ -102,39 +102,37 @@ class MainFrame(wx.Frame):
         sysno = []
         datum = []
         sysinfo = []
+        sysno_f = []
         for file in files:
-            # print(file)
-            xl = pd.ExcelFile(file)
-            # df1 = xl.parse(xl.sheet_names[0])
-            df1 = xl.parse('Daily Report')
-            df2 = xl.parse('Email Summary')
-
-            status = df2.iloc[19, 0].split()[-1]
-            try:
-                comment = df2.iloc[25, 0].replace(',', ' ')
-            except:
-                comment = ''
-
-            for item in df1.columns:
-                if (item.upper().startswith('VTEM')) or \
-                        (item.upper().startswith('ZTEM')) or \
-                        (item.upper().startswith('FWZTEM')):
-                    # print(item)
-                    sysno_f = item
-
-            sysconfig = df1.loc[0]
-            no_rows = df1.shape[0]
-
-            # print('Columns:')
-            # for col in df1.columns:
-            #     print(col)
-
             found = False
 
             workbook = openpyxl.load_workbook(
                 filename=file, data_only=True, read_only=True)
 
             ws = workbook['Daily Report']
+            ws2 = workbook['Email Summary']
+
+            status_no = ws2['R6'].value
+            if status_no == 1:
+                status = 'Mobilization'
+            elif status_no == 2:
+                status = 'System Assembly'
+            elif status_no == 3:
+                status = 'Testing'
+            elif status_no == 4:
+                status = 'Operational'
+            elif status_no == 5:
+                status = 'Troubleshooting'
+            elif status_no == 6:
+                status = 'Heli Tech'
+            elif status_no == 7:
+                status = 'Standby'
+            elif status_no == 8:
+                status = 'Admin/Safety'
+            elif status_no == 9:
+                status = 'Demobilization'
+
+            comment = ws['A41'].value.replace(',', '')
 
             client = ws['S4'].value.replace(',', '')
             system_conf = ws['CF2'].value
@@ -154,30 +152,25 @@ class MainFrame(wx.Frame):
             acctotal = ws['BO15'].value
             perccomp = ws['BZ15'].value
             tofly = ws['CK15'].value
+            sysno = ws['CF1'].value
 
             workbook.close()
 
-            print(f'{datuminside},{sysno_f},{system_conf},{job_no},{location},'
+            print(f'{datuminside},{sysno},{system_conf},{job_no},{location},'
                   f'{client},{pm},{qc},{chief},{operator},{status},'
                   f'{newlines},{reflights},{dailytotal},{qckm},{totalkm},'
                   f'{acctotal},{perccomp},{tofly},{comment}')
 
-            # for no, row in enumerate(df1.loc[1].dropna()):
-            #     print(row)
-            #     if row == 'Date':
-            #         print('yes')
-            #         datum.append(df.loc[1][no + 1])
-
             file_name = file.split('\\')[-1]
             for field in file_name.split():
-                if field.startswith('VTEM'):
-                    sysno.append(field)
+                if (field.startswith('VTEM')) or (field.startswith('ZTEM')) or (field.startswith('FWZTEM')):
+                    sysno_f.append(field)
                 elif field.endswith('xlsm'):
                     datum.append(field.split('.')[0][-8:])
                 # print(field)
             # print(file_name)
-        for s in range(0, len(sysno)):
-            sysinfo.append(sysno[s] + ' ' + datum[s])
+        for s in range(0, len(sysno_f)):
+            sysinfo.append(sysno_f[s] + ' ' + datum[s])
         # sysno = [file.rsplit('\\')[-1].split(' ')[-2] for file in files]
         # datum = [file.rsplit('\\')[-1].split(' ')[-1].split('.')[0][-8:] for file in files]
         # print()
