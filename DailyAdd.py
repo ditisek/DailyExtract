@@ -132,7 +132,10 @@ class MainFrame(wx.Frame):
             elif status_no == 9:
                 status = 'Demobilization'
 
-            comment = ws['A41'].value.replace(',', '')
+            try:
+                comment = ws['A41'].value.replace(',', '')
+            except:
+                comment = ''
 
             client = ws['S4'].value.replace(',', '')
             system_conf = ws['CF2'].value
