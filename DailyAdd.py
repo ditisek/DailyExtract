@@ -141,7 +141,10 @@ class MainFrame(wx.Frame):
             system_conf = ws['CF2'].value
             datuminside = ws['BV3'].value.strftime('%Y/%m/%d')
             job_no = ws['BV4'].value
-            location = ws['S5'].value.replace(',', '')
+            try:
+                location = ws['S5'].value.replace(',', '')
+            except:
+                location = ''
             chief = ws['M7'].value
             operator = ws['M8'].value
             pm = ws['M9'].value
